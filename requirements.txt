@@ -1,0 +1,4 @@
+pygame
+neo4j
+torch
+torch-geometric
