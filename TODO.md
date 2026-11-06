@@ -1,12 +1,14 @@
 # TODO
-- Done 😐.
+- ...
 
 ---
 
 # Notes & Ideas
-- No notes.
+- ...
 
 ---
 
 # Latest Changes
-Fixed `GreedyPlayer` detective logic.
+README update.
+- Updated README.
+- Updated TODO.
