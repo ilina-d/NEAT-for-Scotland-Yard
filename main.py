@@ -17,28 +17,19 @@ from utils.neural_nets.trainers import MrXTrainer, DetectiveTrainer
 from utils.neural_nets.detective_nets import DNet3L, DNet5L, DNet5LW, DNet5LRes
 from utils.neural_nets.mrx_nets import XNet3L, XNet5LRes, XNet5L, XNet5LW
 
+from utils.neat import Genome, NeuronGene, LinkGene, FeedForwardNet
 
 
 def main():
-    dnet = DNet5LW()
-    dnet.load_weights('5LW_BestTrained')
-    xnet = XNet3L()
-    xnet.load_weights('3L_BestTrained')
+    genome = Genome('X', neuron_genes=[NeuronGene(5)],
+                    link_genes=[LinkGene(1,5), LinkGene(5, 4), LinkGene(2, 4), LinkGene(3, 4)])
 
-    game = Game(
-        detective_r = DNetPlayer('r', dnet),
-        detective_g = DNetPlayer('g', dnet),
-        detective_b = DNetPlayer('b', dnet),
-        detective_o = DNetPlayer('o', dnet),
-        detective_p = DNetPlayer('p', dnet),
-        mr_x = XNetPlayer(xnet),
-        wait_after_move = 'input',
-        visuals = True,
-        always_show_x = True
-    )
+    # for var, value in vars(genome).items():
+    #     print(var, value)
 
-    game.play()
+    FFN = FeedForwardNet(genome)
 
+    print(FFN.forward([1.7, 2.2, 1]))
 
 if __name__ == '__main__':
     freeze_support()
