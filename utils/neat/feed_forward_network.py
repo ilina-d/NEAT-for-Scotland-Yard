@@ -13,8 +13,26 @@ class FeedForwardNet:
         'identity': lambda x: x
     }
 
-    def __init__(self, genome: Genome) -> None:
-        """ Build an FFN from the given Genome. """
+    def __init__(self, genome: Genome | str) -> None:
+        """
+        Build an FFN from the given Genome.
+
+        Genome Options:
+            - A pre-made Genome object.
+            - Path to a json file located at 'saved_genomes/path_name.json'.
+            - "X" or "D" to create a randomized fully-connected input output Genome.
+
+        Arguments:
+            genome: The genome option to use.
+        """
+
+        if isinstance(genome, str):
+            if genome == "X" or genome == "D":
+                genome = Genome(genome)
+            else:
+                genome = Genome.load_from_file(genome)
+
+        self.genome = genome
 
         # Build lookup (which neurons wait on which?):
 

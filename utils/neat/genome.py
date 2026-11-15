@@ -1,11 +1,12 @@
 from .link_gene import LinkGene
 from .neuron_gene import NeuronGene
+import json
+import os
 
 
 class Genome:
     """ A genome/chromosome representing the Genotype of the Neural Network. """
 
-    _GENOME_COUNTER = 0
     _INPUT_COUNTS = {'X' : 20, 'D' : 16}
 
     def __init__(self, genome_type: str, neuron_genes: list[NeuronGene] = None,
@@ -21,9 +22,7 @@ class Genome:
             link_genes: The Link Genes that are part of this Genotype.
         """
 
-        Genome._GENOME_COUNTER += 1
-        self.genome_id = Genome._GENOME_COUNTER
-
+        self.genome_type = genome_type
         self.num_inputs = Genome._INPUT_COUNTS[genome_type]
         # num_outputs is always 1
 
@@ -39,7 +38,6 @@ class Genome:
             self.neuron_genes = []
             self.link_genes = []
             self.initialize_genome()
-            # self.set_fitness()
 
 
     def initialize_genome(self) -> None:
@@ -50,10 +48,58 @@ class Genome:
             self.link_genes.append(link)
 
 
-    def set_fitness(self, fitness: float) -> None:
-        """ Evaluate and set the fitness of the genome. """
+    @classmethod
+    def load_from_file(cls, file_path) -> 'Genome':
+        """
+        Load a Genome object from a save file at 'saved_genomes/folder_name/file_name.json'.
+        Folder name should be 'mrx_genomes' or 'detective_genomes'.
 
-        self.fitness = fitness # kill this
+        Arguments:
+            file_path: The path of the file containing the json data.
+        """
+
+        with open(f'saved_genomes/{file_path}.json', 'r') as file:
+            data = json.load(file)
+
+        neuron_genes = []
+        for n_gene in data['neuron_genes']:
+            neuron_genes.append(NeuronGene(n_gene['neuron_id'], n_gene['bias'], n_gene['activation']))
+
+        link_genes = []
+        for l_gene in data['link_genes']:
+            link_genes.append(LinkGene(l_gene['id_from'], l_gene['id_to'], l_gene['weight'], l_gene['is_active']))
+
+        return Genome(data['genome_type'], neuron_genes, link_genes)
+
+
+    def save_to_file(self, file_name):
+        """
+        Save a Genome as a json file located at 'saved_genomes/folder_name/file_name.json'.
+        Folder name will be 'mrx_genomes' or 'detective_genomes' depending on the genome type.
+
+        Arguments:
+            file_name: The name of the file that will contain the json data.
+        """
+
+        folder_name = 'mrx_genomes' if self.genome_type == 'X' else 'detective_genomes'
+        os.makedirs(f'saved_genomes/{folder_name}', exist_ok=True)
+
+        data = dict()
+        data['genome_type'] = self.genome_type
+
+        neuron_genes = []
+        for n_gene in self.neuron_genes:
+            neuron_genes.append({'neuron_id': n_gene.neuron_id, 'bias': n_gene.bias, 'activation': n_gene.activation})
+
+        link_genes = []
+        for l_gene in self.link_genes:
+            link_genes.append({'id_from': l_gene.id_from, 'id_to': l_gene.id_to, 'weight': l_gene.weight, 'is_active': l_gene.is_active})
+
+        data['neuron_genes'] = neuron_genes
+        data['link_genes'] = link_genes
+
+        with open(f'saved_genomes/{folder_name}/{file_name}.json', 'w') as file:
+            json.dump(data, file)
 
 
 __all__ = ["Genome"]

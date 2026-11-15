@@ -10,12 +10,7 @@
 ---
 
 # Latest Changes
-Initial feature modeling and FFN player implementation.
-- Made an `FFNPlayer` that takes a given FFN and uses it to make moves.
-- Made FeedForwardNet pickleable.
-- Modeled initial input features for X and Detective players.
-- Added methods to extract input features for the FFNs in `Graph`.
-- Fixed minor spelling mistakes base GNN nets.
-- Simulator now propagates error when crashing.
-- Removed internal neat classes from init to avoid circular import when running a game or sims in main.
+Updates to Genome and FeedForwardNetwork.
+- Genome objects can be saved to and loaded from a json file.
+- FeedForwardNetwork can be constructed without a Genome object now.
 - Updated TODO.

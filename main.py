@@ -27,37 +27,36 @@ def main():
     # for var, value in vars(genome).items():
     #     print(var, value)
 
-    genome = Genome('X')
-    FFN = FeedForwardNet(genome)
-    ffn_x = FFNPlayer(FFN, 'x')
 
-    genome_d = Genome('D')
-    FFN_D = FeedForwardNet(genome_d)
+    FFN = FeedForwardNet("mrx_genomes/test")
 
-    simulator = Simulator(
+    # genome_d = Genome('D')
+    # FFN_D = FeedForwardNet(genome_d)
+
+    # simulator = Simulator(
+    #     detective_r=RandomPlayer('r'),
+    #     detective_g=RandomPlayer('g'),
+    #     detective_b=RandomPlayer('b'),
+    #     detective_o=RandomPlayer('o'),
+    #     detective_p=RandomPlayer('p'),
+    #     mr_x=ffn_x,
+    #     num_sims=100_000,
+    #     measure_performance=False,
+    #     num_workers=4
+    # )
+    # simulator.start()
+
+    game = Game(
         detective_r=RandomPlayer('r'),
         detective_g=RandomPlayer('g'),
         detective_b=RandomPlayer('b'),
         detective_o=RandomPlayer('o'),
         detective_p=RandomPlayer('p'),
-        mr_x=ffn_x,
-        num_sims=100_000,
-        measure_performance=False,
-        num_workers=4
+        mr_x = FFNPlayer(FFN, 'x'),
+        wait_after_move = 'input',
+        always_show_x = True
     )
-    simulator.start()
-
-    # game = Game(
-    #     detective_r = FFNPlayer(FFN_D, 'r'),
-    #     detective_g = FFNPlayer(FFN_D, 'g'),
-    #     detective_b = FFNPlayer(FFN_D, 'b'),
-    #     detective_o = FFNPlayer(FFN_D, 'o'),
-    #     detective_p = FFNPlayer(FFN_D, 'p'),
-    #     mr_x = RandomPlayer('x'),
-    #     wait_after_move = 'input',
-    #     always_show_x = True
-    # )
-    # game.play()
+    game.play()
 
 if __name__ == '__main__':
     freeze_support()
