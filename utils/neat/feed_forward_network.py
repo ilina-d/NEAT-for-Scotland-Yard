@@ -1,5 +1,6 @@
 import math
 from .genome import Genome
+from utils.helpers import State, Graph
 
 
 class FeedForwardNet:
@@ -54,17 +55,19 @@ class FeedForwardNet:
         evals = []
         for nid in order:
             if nid == genome.output_id:
-                bias, activation = 0.0, FeedForwardNet._ACTIVATION['identity']
+                bias, activation = 0.0, 'identity'
             elif nid in genome.input_ids:
                 continue
             else:
                 neuron = hidden_neurons[nid]
-                bias, activation = neuron.bias, FeedForwardNet._ACTIVATION[neuron.activation]
+                bias, activation = neuron.bias, neuron.activation
             evals.append((nid, bias, activation, incoming[nid]))
 
         self.evals = evals
         self.input_ids = genome.input_ids
         self.output_id = genome.output_id
+
+        self.graph = Graph()
 
 
     def forward(self, inputs: list[float]) -> float:
@@ -79,13 +82,33 @@ class FeedForwardNet:
         """
 
         values = dict(zip(self.input_ids, inputs))
-        for nid, bias, activation, links in self.evals:
+        for nid, bias, activation_name, links in self.evals:
             total = bias
             for source_id, weight in links:
                 total += values[source_id] * weight
-            values[nid] = activation(total)
+            values[nid] = FeedForwardNet._ACTIVATION[activation_name](total)
 
         return values[self.output_id]
+
+
+    def get_score_for_move(self, state: State, name: str, ticket: str, station: int) -> float:
+        """
+        Score a move according to the FFN's policy.
+
+        Arguments:
+            state: The current game state.
+            name: The name of the player whose turn it is.
+            ticket: The ticket used in the move.
+            station: The destination of the move.
+
+        Returns:
+            The score of the given move.
+        """
+
+        features = self.graph.get_ffn_features_for_x(state, ticket, station) if name == 'x' \
+            else self.graph.get_ffn_features_for_d(state, name, ticket, station)
+
+        return self.forward(features)
 
 
 __all__ = ["FeedForwardNet"]

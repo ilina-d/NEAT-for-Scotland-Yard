@@ -119,6 +119,7 @@ class Simulator:
                     )
             except Exception:
                 pool.terminate()
+                raise
             finally:
                 pool.close()
                 pool.join()

@@ -10,7 +10,7 @@ from utils.simulator import Simulator
 from utils.players import \
     RandomPlayer, UserPlayer, ExplorerPlayer, GreedyPlayer, \
     XNetPlayer, XNetSemiRandomPlayer, TrainingXNetPlayer, \
-    DNetPlayer, TrainingDNetPlayer
+    DNetPlayer, TrainingDNetPlayer, FFNPlayer
 
 from utils.neural_nets.trainers import MrXTrainer, DetectiveTrainer
 
@@ -21,15 +21,43 @@ from utils.neat import Genome, NeuronGene, LinkGene, FeedForwardNet
 
 
 def main():
-    genome = Genome('X', neuron_genes=[NeuronGene(5)],
-                    link_genes=[LinkGene(1,5), LinkGene(5, 4), LinkGene(2, 4), LinkGene(3, 4)])
+    # genome = Genome('X', neuron_genes=[NeuronGene(5)],
+    #                 link_genes=[LinkGene(1,5), LinkGene(5, 4), LinkGene(2, 4), LinkGene(3, 4)])
 
     # for var, value in vars(genome).items():
     #     print(var, value)
 
+    genome = Genome('X')
     FFN = FeedForwardNet(genome)
+    ffn_x = FFNPlayer(FFN, 'x')
 
-    print(FFN.forward([1.7, 2.2, 1]))
+    genome_d = Genome('D')
+    FFN_D = FeedForwardNet(genome_d)
+
+    simulator = Simulator(
+        detective_r=RandomPlayer('r'),
+        detective_g=RandomPlayer('g'),
+        detective_b=RandomPlayer('b'),
+        detective_o=RandomPlayer('o'),
+        detective_p=RandomPlayer('p'),
+        mr_x=ffn_x,
+        num_sims=100_000,
+        measure_performance=False,
+        num_workers=4
+    )
+    simulator.start()
+
+    # game = Game(
+    #     detective_r = FFNPlayer(FFN_D, 'r'),
+    #     detective_g = FFNPlayer(FFN_D, 'g'),
+    #     detective_b = FFNPlayer(FFN_D, 'b'),
+    #     detective_o = FFNPlayer(FFN_D, 'o'),
+    #     detective_p = FFNPlayer(FFN_D, 'p'),
+    #     mr_x = RandomPlayer('x'),
+    #     wait_after_move = 'input',
+    #     always_show_x = True
+    # )
+    # game.play()
 
 if __name__ == '__main__':
     freeze_support()

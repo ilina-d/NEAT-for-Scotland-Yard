@@ -145,7 +145,7 @@ class BaseXNet(nn.Module):
     @torch.no_grad()
     def get_action(self, state: State) -> tuple[str, int | None]:
         """
-        Get the best action for the detective the given state.
+        Get the best action for Mr. X in the given state.
 
         Arguments:
             state: The current game state.

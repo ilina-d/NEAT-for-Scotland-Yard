@@ -10,3 +10,5 @@ from .xnet_semirandom_player import *
 
 from .training_dnet_player import *
 from .training_xnet_player import *
+
+from .ffn_player import *

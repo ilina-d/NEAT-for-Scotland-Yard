@@ -6,7 +6,7 @@ class Genome:
     """ A genome/chromosome representing the Genotype of the Neural Network. """
 
     _GENOME_COUNTER = 0
-    _INPUT_COUNTS = {'X' : 3, 'D' : 1}  # filler, will replace with real values
+    _INPUT_COUNTS = {'X' : 20, 'D' : 16}
 
     def __init__(self, genome_type: str, neuron_genes: list[NeuronGene] = None,
                  link_genes: list[LinkGene] = None) -> None:
@@ -17,6 +17,7 @@ class Genome:
             genome_type: Whether the Genome is used to represent a Mr. X or Detective individual.
                          (Can be either "X" or "D")
             neuron_genes: The (hidden) Neuron Genes that are part of this Genotype.
+                         (If no genes are passed, the Genome is preset to a random fully connected minimal individual)
             link_genes: The Link Genes that are part of this Genotype.
         """
 
