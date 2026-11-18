@@ -29,4 +29,26 @@ class LinkGene:
             self.is_active = True
 
 
+    def mutate_weight_value(self, nudge_thr: float, change_thr: float, power: float = 0.5, limit: float = 5.0) -> None:
+        """ Mutate the weight by shifting its value or totally changing it. """
+
+        val = random.random()
+
+        if val < change_thr:
+            self.weight = random.normalvariate(mu = 0, sigma = 1)
+        elif val < change_thr + nudge_thr and nudge_thr != 0:
+            self.weight += random.normalvariate(mu=0, sigma=power)
+
+        self.weight = max(-limit, min(limit, self.weight))
+
+
+    def mutate_active_flag(self, change_thr) -> None:
+        """ Mutate the value of the is_active flag. """
+
+        val = random.random()
+
+        if val < change_thr:
+            self.is_active = random.choice((True, False))
+
+
 __all__ = ["LinkGene"]

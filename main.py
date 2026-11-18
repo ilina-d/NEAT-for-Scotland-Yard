@@ -19,44 +19,21 @@ from utils.neural_nets.mrx_nets import XNet3L, XNet5LRes, XNet5L, XNet5LW
 
 from utils.neat import Genome, NeuronGene, LinkGene, FeedForwardNet
 
+from utils.neat.fitness_evaluator import FitnessEvaluator
+from utils.neat.offspring_generator import OffspringGenerator
+
 
 def main():
-    # genome = Genome('X', neuron_genes=[NeuronGene(5)],
-    #                 link_genes=[LinkGene(1,5), LinkGene(5, 4), LinkGene(2, 4), LinkGene(3, 4)])
+    osg = OffspringGenerator()
+    g1 = Genome('X')
+    g2 = Genome('X')
+    g3 = osg.cross_parents(g1, g2)
+    print(f'G1: {", ".join([f"{link.id_from}--{link.weight:.2f}->{link.id_to}" for link in g1.link_genes])}')
+    print(f'G2: {", ".join([f"{link.id_from}--{link.weight:.2f}->{link.id_to}" for link in g2.link_genes])}')
+    print(f'G3: {", ".join([f"{link.id_from}--{link.weight:.2f}->{link.id_to}" for link in g3.link_genes])}')
+    print(f'G3: {[f"ID: {n.neuron_id}, ACT: {n.activation}, BIAS: {n.bias}" for n in g3.neuron_genes]}')
 
-    # for var, value in vars(genome).items():
-    #     print(var, value)
 
-
-    FFN = FeedForwardNet("mrx_genomes/test")
-
-    # genome_d = Genome('D')
-    # FFN_D = FeedForwardNet(genome_d)
-
-    # simulator = Simulator(
-    #     detective_r=RandomPlayer('r'),
-    #     detective_g=RandomPlayer('g'),
-    #     detective_b=RandomPlayer('b'),
-    #     detective_o=RandomPlayer('o'),
-    #     detective_p=RandomPlayer('p'),
-    #     mr_x=ffn_x,
-    #     num_sims=100_000,
-    #     measure_performance=False,
-    #     num_workers=4
-    # )
-    # simulator.start()
-
-    game = Game(
-        detective_r=RandomPlayer('r'),
-        detective_g=RandomPlayer('g'),
-        detective_b=RandomPlayer('b'),
-        detective_o=RandomPlayer('o'),
-        detective_p=RandomPlayer('p'),
-        mr_x = FFNPlayer(FFN, 'x'),
-        wait_after_move = 'input',
-        always_show_x = True
-    )
-    game.play()
 
 if __name__ == '__main__':
     freeze_support()

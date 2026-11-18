@@ -39,7 +39,7 @@ class Simulator:
 
     def __init__(self, detective_r: BasePlayer, detective_g: BasePlayer, detective_b: BasePlayer,
                  detective_o: BasePlayer, detective_p: BasePlayer, mr_x: BasePlayer, num_sims: int,
-                 measure_performance: bool = True, num_workers: int = 1) -> None:
+                 measure_performance: bool = True, num_workers: int = 1, print_out: bool = True) -> None:
         """
         Create a new Simulator instance.
 
@@ -53,6 +53,7 @@ class Simulator:
             num_sims: Number of games to simulate.
             measure_performance: Whether to measure code performance.
             num_workers: Number of cores to use while running simulations.
+            print_out: Whether to print the progress and results from the simulations.
         """
 
         if any([isinstance(player, UserPlayer)
@@ -68,6 +69,10 @@ class Simulator:
         self.num_sims = num_sims
         self.measure_performance = measure_performance
         self.num_workers = min(cpu_count(), num_workers)
+        self.print_out = print_out
+
+        self.x_wr = None
+        self.d_wr = None
 
 
     def _run_sims(self) -> str:
@@ -83,7 +88,8 @@ class Simulator:
         sum_game_turns = 0
         d_wins, x_wins = 0, 0
 
-        print('[ SIMULATOR ] : Running simulations...', end = '\r')
+        if self.print_out:
+            print('[ SIMULATOR ] : Running simulations...', end = '\r')
         context = get_context('spawn')
         with context.Pool(processes = self.num_workers) as pool:
             try:
@@ -109,14 +115,15 @@ class Simulator:
                     else:
                         estimated_tl = f'~{round(estimated_tl)} seconds'
 
-                    print(
+                    if self.print_out:
+                        print(
                         f'\r\033[K'
-                        f'[ SIMULATOR ] : Running simulations... '
-                        f'{str(round(percent_done, 2)) + "%":<6} '
-                        f'<{"=" * int(percent_done)}{"-" * int(100 - int(percent_done))}> '
-                        f'| X({x_wins}) <-> ({d_wins})D '
-                        f'| ETL: {estimated_tl}', end = ''
-                    )
+                            f'[ SIMULATOR ] : Running simulations... '
+                            f'{str(round(percent_done, 2)) + "%":<6} '
+                            f'<{"=" * int(percent_done)}{"-" * int(100 - int(percent_done))}> '
+                            f'| X({x_wins}) <-> ({d_wins})D '
+                            f'| ETL: {estimated_tl}', end = ''
+                        )
             except Exception:
                 pool.terminate()
                 raise
@@ -148,7 +155,11 @@ class Simulator:
             f'==================================\n'
         )
 
-        print(results)
+        self.x_wr = round(x_wins / self.num_sims * 100, 5)
+        self.d_wr = round(d_wins / self.num_sims * 100, 5)
+
+        if self.print_out:
+            print(results)
         return results
 
 

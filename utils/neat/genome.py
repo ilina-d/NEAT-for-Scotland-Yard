@@ -39,6 +39,14 @@ class Genome:
             self.link_genes = []
             self.initialize_genome()
 
+        self.nid_dict = dict()
+        for n_gene in self.neuron_genes:
+            self.nid_dict[n_gene.neuron_id] = n_gene
+
+        self.lid_dict = dict()
+        for l_gene in self.link_genes:
+            self.lid_dict[l_gene.link_id] = l_gene
+
 
     def initialize_genome(self) -> None:
         """ Initialize a starter fully-connected Genome. """
@@ -46,6 +54,47 @@ class Genome:
         for in_id in self.input_ids:
             link = LinkGene(id_from = in_id, id_to = self.output_id)
             self.link_genes.append(link)
+
+
+    def add_link(self, start: int, end: int) -> None:
+        """ Add a new link gene to Genome. """
+
+        link = LinkGene(start, end)
+        self.link_genes.append(link)
+        self.lid_dict[(start, end)] = link
+
+
+    def add_link_obj(self, link: LinkGene) -> None:
+        """ Add a new link gene to the Genome. """
+
+        self.link_genes.append(link)
+        self.lid_dict[link.link_id] = link
+
+
+    def add_neuron_obj(self, neuron: NeuronGene) -> None:
+        """ Add a new neuron gene to the Genome. """
+
+        self.neuron_genes.append(neuron)
+        self.nid_dict[neuron.neuron_id] = neuron
+
+
+    def remove_neuron_obj(self, neuron: NeuronGene) -> None:
+        """ Remove the given neuron from the Genome, and all the links that are connected to it. """
+
+        n_id = neuron.neuron_id
+        self.neuron_genes.remove(neuron)
+        self.nid_dict.pop(n_id)
+
+        for link_id in list(self.lid_dict):
+            if n_id in link_id:
+                self.remove_link(link_id)
+
+
+    def remove_link(self, link_id: tuple[int, int]) -> None:
+        """ Remove a link from the Genome. """
+
+        link = self.lid_dict.pop(link_id)
+        self.link_genes.remove(link)
 
 
     @classmethod
@@ -69,7 +118,10 @@ class Genome:
         for l_gene in data['link_genes']:
             link_genes.append(LinkGene(l_gene['id_from'], l_gene['id_to'], l_gene['weight'], l_gene['is_active']))
 
-        return Genome(data['genome_type'], neuron_genes, link_genes)
+        genome = Genome(data['genome_type'], neuron_genes, link_genes)
+        genome.fitness = data['fitness']
+
+        return genome
 
 
     def save_to_file(self, file_name):
@@ -97,6 +149,7 @@ class Genome:
 
         data['neuron_genes'] = neuron_genes
         data['link_genes'] = link_genes
+        data['fitness'] = self.fitness
 
         with open(f'saved_genomes/{folder_name}/{file_name}.json', 'w') as file:
             json.dump(data, file)
